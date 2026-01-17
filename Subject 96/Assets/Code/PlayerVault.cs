@@ -31,7 +31,7 @@ public class PlayerVault : MonoBehaviour
             float direction = transform.localScale.x > 0 ? 2 : -2;
             Vector2 targetPoint = new Vector2(transform.position.x + (2.0f * direction), transform.position.y);
             StartCoroutine(VaultRoutine(targetPoint, 0.5f));
-            Debug.Log("Kutas");
+            
         }
     }
 

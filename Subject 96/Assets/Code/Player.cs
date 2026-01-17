@@ -10,17 +10,20 @@ public class Player : MonoBehaviour
     private float vertical;
     public float jumpingPower = 12f;
     public float vaultDuration = 3f;
+    public float acceleration = 50f;
+    public float deceleration = 40f;
 
     private Transform ThingToHide;
     public GameObject body;
 
     [Header("Components")]
+    #region Components 
     public Rigidbody2D rb2d;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer, VaultLayer;
     [SerializeField] private Transform ceilingCheck;
     [SerializeField] private LayerMask HidingSpotLayer;
-
+    #endregion
     [Header("Bools")]
     private bool isFacingRight = true;
     private bool canMove = true;
@@ -79,7 +82,7 @@ public class Player : MonoBehaviour
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer | VaultLayer);
     }
 
     private bool onLadder()
@@ -87,11 +90,17 @@ public class Player : MonoBehaviour
         return isLadder;
     }
 
+
+
     void FixedUpdate()
     {
         if ((canMove && isGrounded()) || onLadder())
         {
-            rb2d.linearVelocity = new Vector2(horizontal * speed, rb2d.linearVelocity.y);
+            float targetx = horizontal * speed;
+            float rate = (horizontal != 0) ? acceleration : deceleration;
+            rb2d.linearVelocity = new Vector2(Mathf.MoveTowards(rb2d.linearVelocity.x, targetx, rate * Time.deltaTime), rb2d.linearVelocity.y);
+
+            //rb2d.linearVelocity = new Vector2(horizontal * speed, rb2d.linearVelocity.y);
         }
 
         if (isClimbing)

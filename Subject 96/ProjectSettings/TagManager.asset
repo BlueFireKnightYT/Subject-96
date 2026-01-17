@@ -7,6 +7,7 @@ TagManager:
   - Hide
   - Ladder
   - Lever
+  - Rock
   layers:
   - Default
   - TransparentFX
