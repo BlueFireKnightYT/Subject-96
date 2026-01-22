@@ -3,8 +3,6 @@ using UnityEngine;
 public class Transparency : MonoBehaviour
 {
     private SpriteRenderer sprRen;
-    public Color Entercolor;
-    public Color Exitcolor;
     void Start()
     {
         sprRen = GetComponent<SpriteRenderer>();
@@ -20,7 +18,7 @@ public class Transparency : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            sprRen.color = Entercolor;
+            sprRen.color = new Color(1f, 1f, 1f, 0.53f);
         }
     }
 
@@ -28,7 +26,7 @@ public class Transparency : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            sprRen.color = Exitcolor;
+            sprRen.color = new Color(1f, 1f, 1f, 1f);
         }
     }
 }

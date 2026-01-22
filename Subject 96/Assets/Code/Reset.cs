@@ -1,22 +1,17 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-    public class Reset : MonoBehaviour
+public class Reset : MonoBehaviour
 {
-   
-    void Start()
+
+    void Update()
     {
-        
-    }
-    
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.R))
         {
-            SceneLoad();
+            ResetScene();
         }
     }
 
-    private void SceneLoad()
+    void ResetScene()
     {
         SceneManager.LoadScene("PLAYROOM");
     }

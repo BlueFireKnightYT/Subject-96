@@ -3,16 +3,16 @@ using UnityEngine;
 public class DestroyOnCollision : MonoBehaviour
 {
     public float breakForce = 40f;
-    
+
     void Start()
     {
-        
+
     }
 
-    
+
     void Update()
     {
-        
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

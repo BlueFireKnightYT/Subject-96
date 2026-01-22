@@ -10,25 +10,23 @@ public class Player : MonoBehaviour
     private float vertical;
     public float jumpingPower = 12f;
     public float vaultDuration = 3f;
-    public float acceleration = 50f;
-    public float deceleration = 40f;
-
+    public float DeadForce = 10f;
     private Transform ThingToHide;
     public GameObject body;
 
     [Header("Components")]
-    #region Components 
     public Rigidbody2D rb2d;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer, VaultLayer;
     [SerializeField] private Transform ceilingCheck;
     [SerializeField] private LayerMask HidingSpotLayer;
-    #endregion
+
     [Header("Bools")]
     private bool isFacingRight = true;
     private bool canMove = true;
     private bool isLadder;
     private bool isClimbing;
+    private bool dead = false;
 
     bool isCrouching = false;
 
@@ -44,8 +42,12 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (dead) canMove = false;
+
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
+
+        if (dead) return;
 
         if (Input.GetButtonDown("Jump") && isGrounded() && !isCrouching)
         {
@@ -76,13 +78,15 @@ public class Player : MonoBehaviour
             speed = 6f;
         }
 
+       
+
         Flip();
     }
 
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer | VaultLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     private bool onLadder()
@@ -90,17 +94,11 @@ public class Player : MonoBehaviour
         return isLadder;
     }
 
-
-
     void FixedUpdate()
     {
         if ((canMove && isGrounded()) || onLadder())
         {
-            float targetx = horizontal * speed;
-            float rate = (horizontal != 0) ? acceleration : deceleration;
-            rb2d.linearVelocity = new Vector2(Mathf.MoveTowards(rb2d.linearVelocity.x, targetx, rate * Time.deltaTime), rb2d.linearVelocity.y);
-
-            //rb2d.linearVelocity = new Vector2(horizontal * speed, rb2d.linearVelocity.y);
+            rb2d.linearVelocity = new Vector2(horizontal * speed, rb2d.linearVelocity.y);
         }
 
         if (isClimbing)
@@ -145,6 +143,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        float force = collision.relativeVelocity.magnitude;
+        Debug.Log("Force " + force);
+        if(force > DeadForce)
+        {
+            Dead();
+        }
+    }
+
     void Crounch()
     {
         body.transform.localScale = new Vector2(1f, 1f);
@@ -153,5 +161,13 @@ public class Player : MonoBehaviour
     void StopCrounching()
     {
         body.transform.localScale = new Vector2(1f, 1.5f);
+    }
+
+    void Dead()
+    {
+        dead = true;
+        rb2d.AddTorque(50f);
+        rb2d.constraints = RigidbodyConstraints2D.None;
+        Debug.Log("Dead");
     }
 }
