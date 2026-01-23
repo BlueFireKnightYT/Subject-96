@@ -8,6 +8,7 @@ TagManager:
   - Ladder
   - Lever
   - Rock
+  - Restart
   layers:
   - Default
   - TransparentFX

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -131,6 +132,10 @@ public class Player : MonoBehaviour
         if (collision.CompareTag("Ladder"))
         {
             isLadder = true;
+        }
+        else if (collision.CompareTag("Restart"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 
