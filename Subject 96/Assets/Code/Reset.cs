@@ -11,8 +11,8 @@ public class Reset : MonoBehaviour
         }
     }
 
-    void ResetScene()
+    public void ResetScene()
     {
-        SceneManager.LoadScene("PLAYROOM");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

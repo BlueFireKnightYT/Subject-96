@@ -3,9 +3,12 @@ using UnityEngine;
 public class Transparency : MonoBehaviour
 {
     private SpriteRenderer sprRen;
+    Color baseColor;
     void Start()
     {
         sprRen = GetComponent<SpriteRenderer>();
+        baseColor = sprRen.color;
+        
     }
 
     // Update is called once per frame
@@ -18,7 +21,9 @@ public class Transparency : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            sprRen.color = new Color(1f, 1f, 1f, 0.53f);
+            Color tempColor = sprRen.color;
+            tempColor.a = 0.5f;
+            sprRen.color = tempColor;
         }
     }
 
@@ -26,7 +31,7 @@ public class Transparency : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            sprRen.color = new Color(1f, 1f, 1f, 1f);
+            sprRen.color = baseColor;
         }
     }
 }
