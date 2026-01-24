@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer, VaultLayer;
     [SerializeField] private Transform ceilingCheck;
     [SerializeField] private LayerMask HidingSpotLayer;
+    public AudioSource deathSound;
 
     [Header("Bools")]
     private bool isFacingRight = true;
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        deathSound = GetComponent<AudioSource>();
     }
 
     private bool canStand()
@@ -43,7 +45,10 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (dead) canMove = false;
+        if (dead) canMove = false; 
+
+
+
 
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
@@ -171,8 +176,8 @@ public class Player : MonoBehaviour
     void Dead()
     {
         dead = true;
-        rb2d.AddTorque(50f);
+        rb2d.AddTorque(200f);
         rb2d.constraints = RigidbodyConstraints2D.None;
-        Debug.Log("Dead");
+        deathSound.Play();
     }
 }
