@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     [Header("Floats")]
     public float speed = 6f;
-    public float Ladderspeed = 3f;
+    public float Ladderspeed = 4f;
     private float horizontal;
     private float vertical;
     public float jumpingPower = 12f;
@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     [Header("Components")]
     public Rigidbody2D rb2d;
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer, VaultLayer;
+    [SerializeField] private LayerMask groundLayer, VaultLayer, EdgeLayer;
     [SerializeField] private Transform ceilingCheck;
     [SerializeField] private LayerMask HidingSpotLayer;
     public AudioSource deathSound;
@@ -26,9 +26,10 @@ public class Player : MonoBehaviour
     [Header("Bools")]
     private bool isFacingRight = true;
     private bool canMove = true;
-    private bool isLadder;
+    private bool isOnLadder;
     private bool isClimbing;
     private bool dead = false;
+    public bool EdgeDetected;
 
     bool isCrouching = false;
 
@@ -72,19 +73,38 @@ public class Player : MonoBehaviour
             isCrouching = false;
         }
 
-
-        if (isLadder && Mathf.Abs(vertical) > 0.1f)
+        if (isOnLadder && Input.GetKeyDown(KeyCode.W) | Input.GetKeyDown(KeyCode.S))
         {
-            isClimbing = true;
-            speed = 3f;
+            rb2d.gravityScale = 0f;
+            rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, 0);
         }
         else
         {
-            isClimbing = false;
-            speed = 6f;
+            rb2d.gravityScale = 4f;
         }
 
-       
+        if (isOnLadder && Input.GetKey(KeyCode.W))
+        {
+            isClimbing = true;
+        }
+
+        if (isClimbing)
+        {
+            float moveY = 0;
+
+            if (Input.GetKey(KeyCode.W))
+                moveY = 1;
+            else if (Input.GetKey(KeyCode.S))
+                moveY = -1;
+            
+
+            rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, moveY * Ladderspeed);
+        }
+
+        if (EdgeDetected)
+        {
+            Debug.Log("Edge Detected");
+        }
 
         Flip();
     }
@@ -92,17 +112,14 @@ public class Player : MonoBehaviour
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer | EdgeLayer);
     }
 
-    private bool onLadder()
-    {
-        return isLadder;
-    }
+    
 
     void FixedUpdate()
     {
-        if ((canMove && isGrounded()) || onLadder())
+        if ((canMove && isGrounded()))
         {
             rb2d.linearVelocity = new Vector2(horizontal * speed, rb2d.linearVelocity.y);
         }
@@ -120,7 +137,7 @@ public class Player : MonoBehaviour
 
     private void Flip()
     {
-        if (isGrounded() || onLadder())
+        if (isGrounded())
         {
             if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
             {
@@ -136,7 +153,7 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Ladder"))
         {
-            isLadder = true;
+            isOnLadder = true;
         }
         else if (collision.CompareTag("Restart"))
         {
@@ -148,7 +165,7 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Ladder"))
         {
-            isLadder = false;
+            isOnLadder = false;
             isClimbing = false;
         }
     }
@@ -156,7 +173,6 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         float force = collision.relativeVelocity.magnitude;
-        Debug.Log("Force " + force);
         if(force > DeadForce)
         {
             Dead();
